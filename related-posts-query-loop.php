@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Related Posts Query Loop
  * Description: Add a related posts query loop block.
- * Version: 0.1.0
+ * Version: 0.0.1
  * Author: HAMWORKS
  * License: GPL-2.0+
  * GitHub Plugin URI: https://github.com/hamworks/related-posts-query-loop
@@ -42,7 +42,29 @@ add_action(
 				if ( ! isset( $query_block['attrs']['namespace'] ) || 'related-posts-query-loop' !== $query_block['attrs']['namespace'] ) {
 					return $query;
 				}
-				$query['orderby'] = 'term_match_count';
+
+				$query['post__not_in'] = array( get_the_ID() );
+				$query['orderby']      = 'term_match_count';
+				//phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+				$query['tax_query'] = array_merge(
+					array(
+						'relation' => 'OR',
+					),
+					array_map(
+						function ( $taxonomy ) {
+							$terms = wp_get_post_terms( get_the_ID(), $taxonomy, array( 'fields' => 'ids' ) );
+							if ( empty( $terms ) ) {
+								return null;
+							}
+							return array(
+								'taxonomy' => $taxonomy,
+								'field'    => 'term_id',
+								'terms'    => $terms,
+							);
+						},
+						get_taxonomies( array( 'public' => true ) )
+					)
+				);
 
 				return $query;
 			},
