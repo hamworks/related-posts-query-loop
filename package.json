@@ -48,11 +48,11 @@
 		"hooks": {
 			"before:bump": [
 				"composer install --optimize-autoloader --prefer-dist --no-dev",
-				"bash ./bin/create-release.sh social-link-variations ${version}",
-				"bash ./bin/create-zip.sh social-link-variations"
+				"bash ./bin/create-release.sh related-posts-query-loop ${version}",
+				"bash ./bin/create-zip.sh related-posts-query-loop"
 			],
 			"after:bump": "composer install --optimize-autoloader --prefer-dist",
-			"after:release": "bash ./bin/cleanup.sh social-link-variations"
+			"after:release": "bash ./bin/cleanup.sh related-posts-query-loop"
 		},
 		"github": {
 			"release": true,
